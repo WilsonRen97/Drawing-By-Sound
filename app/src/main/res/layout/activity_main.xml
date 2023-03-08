@@ -18,7 +18,6 @@
         android:id="@+id/myBtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
         android:text="點擊給予語音指令"
         />
@@ -27,11 +26,11 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
         <Button
             android:id="@+id/clearButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
             android:text="清除畫面"
             android:layout_margin="5dp"
             />
@@ -39,8 +38,14 @@
             android:id="@+id/fillBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:text="填滿顏色"
+            android:text="填滿模式"
+            android:layout_margin="5dp"
+            />
+        <Button
+            android:id="@+id/penBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="畫筆模式"
             android:layout_margin="5dp"
             />
     </LinearLayout>

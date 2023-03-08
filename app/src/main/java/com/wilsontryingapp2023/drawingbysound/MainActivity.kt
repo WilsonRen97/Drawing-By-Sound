@@ -35,6 +35,7 @@ class MainActivity : AppCompatActivity() {
     private var progressBar : ProgressBar? = null
     private var clearBtn : Button? = null
     private var fillBtn : Button? = null
+    private var penBtn : Button? = null
 
     private var sr: SpeechRecognizer? = null
     private var all = ""
@@ -71,6 +72,7 @@ class MainActivity : AppCompatActivity() {
         progressBar = findViewById(R.id.progressBar)
         clearBtn = findViewById(R.id.clearButton)
         fillBtn = findViewById(R.id.fillBtn)
+        penBtn = findViewById(R.id.penBtn)
         paintView!!.useProgressBar(progressBar!!)
 
         resultText!!.text = "聲音辨識結果在這裏"
@@ -103,6 +105,10 @@ class MainActivity : AppCompatActivity() {
 
         fillBtn!!.setOnClickListener(){_ ->
             paintView!!.changeMode(-1)
+        }
+
+        penBtn!!.setOnClickListener(){_ ->
+            paintView!!.changeMode(1)
         }
     }
 
