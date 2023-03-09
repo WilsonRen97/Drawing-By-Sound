@@ -5,7 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/grey"
     android:padding="10dp">
+
 
     <TextView
         android:id="@+id/textView3"
@@ -29,24 +31,112 @@
 
         <Button
             android:id="@+id/clearButton"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="清除畫面"
             android:layout_margin="5dp"
+            android:layout_weight="1"
             />
         <Button
             android:id="@+id/fillBtn"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="填滿模式"
             android:layout_margin="5dp"
+            android:layout_weight="1"
             />
         <Button
             android:id="@+id/penBtn"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="畫筆模式"
             android:layout_margin="5dp"
+            android:layout_weight="1"
+            />
+
+        <Button
+            android:id="@+id/eraserBtn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="橡皮擦模式"
+            android:layout_margin="5dp"
+            android:layout_weight="1"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/grey"
+        >
+
+        <!--我們只能在AppCompatButton中設定背景-->
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/black_btn"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@drawable/round_btn"
+            android:layout_margin="5dp"
+            android:backgroundTint="@color/black"
+            />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/whiteBtn"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@drawable/round_btn"
+            android:layout_margin="5dp"
+            android:backgroundTint="@color/white"
+            />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/redBtn"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@drawable/round_btn"
+            android:layout_margin="5dp"
+            android:backgroundTint="@color/red"
+            />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/greenBtn"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@drawable/round_btn"
+            android:layout_margin="5dp"
+            android:backgroundTint="@color/green"
+            />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/blueBtn"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@drawable/round_btn"
+            android:layout_margin="5dp"
+            android:backgroundTint="@color/blue"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/yellowBtn"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@drawable/round_btn"
+            android:layout_margin="5dp"
+            android:backgroundTint="@color/yellow"
+            />
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/magentaBtn"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@drawable/round_btn"
+            android:layout_margin="5dp"
+            android:backgroundTint="@color/magenta"
             />
     </LinearLayout>
 
@@ -58,6 +148,7 @@
         android:layout_height="wrap_content" />
 
     <com.wilsontryingapp2023.drawingbysound.PaintView
+        android:background="@color/white"
         android:id="@+id/paint_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

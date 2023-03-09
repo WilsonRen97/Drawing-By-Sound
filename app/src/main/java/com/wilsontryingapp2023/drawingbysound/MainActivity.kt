@@ -32,10 +32,18 @@ class MainActivity : AppCompatActivity() {
     private var paintView: PaintView? = null
     private var resultText: TextView? = null
     private var btn: Button? = null
-    private var progressBar : ProgressBar? = null
-    private var clearBtn : Button? = null
-    private var fillBtn : Button? = null
-    private var penBtn : Button? = null
+    private var progressBar: ProgressBar? = null
+    private var clearBtn: Button? = null
+    private var fillBtn: Button? = null
+    private var penBtn: Button? = null
+    private var eraserBtn: Button? = null
+    private var blackBtn: Button? = null
+    private var whiteBtn: Button? = null
+    private var redBtn: Button? = null
+    private var blueBtn: Button? = null
+    private var greenBtn: Button? = null
+    private var yellowBtn: Button? = null
+    private var magentaBtn: Button? = null
 
     private var sr: SpeechRecognizer? = null
     private var all = ""
@@ -74,6 +82,15 @@ class MainActivity : AppCompatActivity() {
         fillBtn = findViewById(R.id.fillBtn)
         penBtn = findViewById(R.id.penBtn)
         paintView!!.useProgressBar(progressBar!!)
+        eraserBtn = findViewById(R.id.eraserBtn)
+        blackBtn = findViewById(R.id.black_btn)
+        whiteBtn = findViewById(R.id.whiteBtn)
+        redBtn = findViewById(R.id.redBtn)
+        greenBtn = findViewById(R.id.greenBtn)
+        blueBtn = findViewById(R.id.blueBtn)
+        yellowBtn = findViewById(R.id.yellowBtn)
+        magentaBtn = findViewById(R.id.magentaBtn)
+
 
         resultText!!.text = "聲音辨識結果在這裏"
         btn!!.setOnClickListener() { _ ->
@@ -99,16 +116,60 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        clearBtn!!.setOnClickListener(){_ ->
+        clearBtn!!.setOnClickListener() { _ ->
+            EraserMode = false
             paintView!!.clear()
         }
 
-        fillBtn!!.setOnClickListener(){_ ->
+        fillBtn!!.setOnClickListener() { _ ->
+            EraserMode = false
             paintView!!.changeMode(-1)
         }
 
-        penBtn!!.setOnClickListener(){_ ->
+        penBtn!!.setOnClickListener() { _ ->
+            EraserMode = false
             paintView!!.changeMode(1)
+        }
+
+        eraserBtn!!.setOnClickListener() { _ ->
+            paintView!!.changeMode(1)
+            paintView!!.changeBrushColor("white")
+            EraserMode = true
+        }
+
+        blackBtn!!.setOnClickListener() { _ ->
+            paintView!!.changeBrushColor("black")
+            EraserMode = false
+        }
+
+        whiteBtn!!.setOnClickListener() { _ ->
+            paintView!!.changeBrushColor("white")
+            EraserMode = false
+        }
+
+        redBtn!!.setOnClickListener() { _ ->
+            paintView!!.changeBrushColor("red")
+            EraserMode = false
+        }
+
+        greenBtn!!.setOnClickListener() { _ ->
+            paintView!!.changeBrushColor("green")
+            EraserMode = false
+        }
+
+        blueBtn!!.setOnClickListener() { _ ->
+            paintView!!.changeBrushColor("blue")
+            EraserMode = false
+        }
+
+        yellowBtn!!.setOnClickListener() { _ ->
+            paintView!!.changeBrushColor("yellow")
+            EraserMode = false
+        }
+
+        magentaBtn!!.setOnClickListener() { _ ->
+            paintView!!.changeBrushColor("magenta")
+            EraserMode = false
         }
     }
 
@@ -172,9 +233,17 @@ class MainActivity : AppCompatActivity() {
         private fun restoreBtnStyling() {
             // fetch color programmatically
             val typedValue = TypedValue()
-            theme.resolveAttribute(com.google.android.material.R.attr.colorOnPrimary, typedValue, true);
+            theme.resolveAttribute(
+                com.google.android.material.R.attr.colorOnPrimary,
+                typedValue,
+                true
+            );
             val textColor = ContextCompat.getColor(applicationContext, typedValue.resourceId)
-            theme.resolveAttribute(com.google.android.material.R.attr.colorPrimary, typedValue, true);
+            theme.resolveAttribute(
+                com.google.android.material.R.attr.colorPrimary,
+                typedValue,
+                true
+            );
             val backgroundColor = ContextCompat.getColor(applicationContext, typedValue.resourceId)
 
             // 設定isListening是false，以及將button的顏色、文字、背景恢復到原本的設定
@@ -218,45 +287,74 @@ class MainActivity : AppCompatActivity() {
             val command = data[0].toString()
             val commandString = command.split(" ")
             val colors = ArrayList<String>()
+            var penCommand: Boolean = false
+            var fillCommand: Boolean = false
+
+            // 確認第一個辨識結果的句子中的所有內容
             for (i in commandString.indices) {
                 val currentString = commandString[i].lowercase()
+                // 如果是clear的話
                 if (currentString == "clear") {
                     paintView!!.clear()
+                    EraserMode = false
+                    return // 可以讓for loop不會繼續運行
                 }
+
+                // 如果是橡皮擦的話，就不要讓程式碼繼續運行了。若使用者說「blue eraser red」，那我們必須要不管blue與red，而是設定paintView的mode=1，且顏色必須是白色。
                 if (currentString == "eraser" || currentString == "erase" || currentString == "chaser" || currentString == "tracer" || currentString == "spacer") {
-                    colors.add(currentString)
                     paintView!!.changeMode(1)
+                    paintView!!.changeBrushColor("white")
                     EraserMode = true
-                } else if (currentString == "fill" || currentString == "fell" || currentString == "feel" || currentString == "fail" || currentString == "phil" || currentString == "chill") {
-                    paintView!!.changeMode(-1)
-                } else if (currentString == "pen" || currentString == "pain" || currentString == "pane") {
-                    paintView!!.changeMode(1)
+                    return // 可以讓for loop不會繼續運行
                 }
+                // 如果是填滿模式的話，不需要加入return，因為我們可以希望可以讀取「fill green」這種指令
+                else if (currentString == "fill" || currentString == "fell" || currentString == "feel" || currentString == "fail" || currentString == "phil" || currentString == "chill") {
+                    fillCommand = true
+                    EraserMode = false
+                }
+                // 如果是畫筆模式的話，不需要加入return，因為我們可以希望可以讀取「pen green」這種指令
+                else if (currentString == "pen" || currentString == "pain" || currentString == "pane" || currentString == "pan") {
+                    penCommand = true
+                    EraserMode = false
+                }
+
+                // 如果句子中，有顏色的話，我們就加入colors這個arraylist當中
                 if (currentString == "blue" || currentString == "blu" || currentString == "black" || currentString == "cyan" || currentString == "gray" || currentString == "green" || currentString == "queen" || currentString == "ring" || currentString == "magenta" || currentString == "orange" || currentString == "red" || currentString == "read" || currentString == "lead" || currentString == "white" || currentString == "jello" || currentString == "mellow" || currentString == "yellow") {
                     colors.add(currentString)
                     EraserMode = false
                 }
             }
 
+            // 如果指令中不包含pen或是fill的話，就不需要change mode
+            // 如果我們是在pen指令或是fill指令的話，就執行下面的程式碼
+            // clear與eraser有return keyword，所以不會執行到if這邊。所以我們可以檢查pen以及fill即可
+            println(penCommand)
+            println(fillCommand)
+            if (penCommand && fillCommand) {
+                Toast.makeText(
+                    applicationContext,
+                    "You cannot ask for fill and pen at the same time.",
+                    Toast.LENGTH_LONG
+                ).show()
+                return // 為了不讓顏色改變，所以這裡直接return即可
+            } else if (penCommand) {
+                paintView!!.changeMode(1)
+            } else if (fillCommand) {
+                paintView!!.changeMode(-1)
+            }
+
             if (colors.size == 0) {
-                val t =
-                    Toast.makeText(applicationContext, "No color detected.", Toast.LENGTH_LONG)
-                t.show()
+                Toast.makeText(applicationContext, "No new color detected.", Toast.LENGTH_LONG)
+                    .show()
             } else if (colors.size == 1) {
-                if (colors[0] == "eraser") {
-                    paintView!!.changeBrushColor("white")
-                } else {
-                    paintView!!.changeBrushColor(parseColor(colors[0]))
-                }
+                paintView!!.changeBrushColor(parseColor(colors[0]))
             } else {
-                val t = Toast.makeText(
+                Toast.makeText(
                     applicationContext,
                     "Multiple color detected. Please provide only one color in your sentence.",
                     Toast.LENGTH_LONG
-                )
-                t.show()
+                ).show()
             }
-
         }
 
         override fun onBeginningOfSpeech() {}

@@ -1,16 +1,15 @@
 package com.wilsontryingapp2023.drawingbysound
 
+import android.app.Activity
 import android.content.Context
 import android.graphics.*
 import android.os.Handler
 import android.os.Looper
-import android.os.Message
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import android.widget.ProgressBar
 import java.util.*
-import java.util.concurrent.Executors
 import kotlin.collections.ArrayList
 
 
@@ -34,7 +33,6 @@ class PaintView : View {
     private var mX = 0f
     private var mY = 0f
 
-    private var executor = Executors.newSingleThreadExecutor()
     private var h = Handler(Looper.getMainLooper())
 
     inner class LooperThread : Thread() {
@@ -51,11 +49,7 @@ class PaintView : View {
         }
     }
 
-    var thread : LooperThread = LooperThread()
-
-    companion object {
-        private const val COLOR_PEN = Color.RED
-    }
+    private var thread : LooperThread = LooperThread()
 
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {
         // 以下這些設定，是對於整個畫面中的所有Finger Path都適用的總設定
@@ -75,7 +69,7 @@ class PaintView : View {
         myPaint!!.alpha = 0xff
         // alpha設定透明度。這裡我們設定0xff代表完全不透明
 
-        currentColor = COLOR_PEN
+        currentColor = Color.RED
         myBitmapPaint = Paint()
         myBitmapPaint!!.isDither = true
 
@@ -120,8 +114,8 @@ class PaintView : View {
             myPaint!!.color = fp.color
             myPaint!!.strokeWidth = fp.strokeWidth.toFloat()
             myCanvas!!.drawPath(fp.path, myPaint!!)
-            myCanvas!!.save()
         }
+
         canvas.drawBitmap(myBitmap!!, 0f, 0f, myBitmapPaint)
     }
 
@@ -159,7 +153,7 @@ class PaintView : View {
         myPath!!.lineTo(mX, mY)
     }
 
-    fun floodFill(image: Bitmap, node: Point?, targetColor: Int, replacementColor: Int) {
+    private fun floodFill(image: Bitmap, node: Point?, targetColor: Int, replacementColor: Int) {
         var node = node
         val width = image.width
         val height = image.height
@@ -168,11 +162,15 @@ class PaintView : View {
             do {
                 var x = node!!.x
                 val y = node!!.y
+
+                // 先退回到最左邊的位置
                 while (x > 0 && image.getPixel(x - 1, y) == targetColor) {
                     x--
                 }
+                // 設定兩個變數，代表是否需要向上或向下span
                 var spanUp = false
                 var spanDown = false
+
                 while (x < width && image.getPixel(x, y) == targetColor) {
                     image.setPixel(x, y, replacementColor)
                     if (!spanUp && y > 0 && image.getPixel(x, y - 1) == targetColor) {
@@ -184,21 +182,30 @@ class PaintView : View {
                     if (!spanDown && y < height - 1 && image.getPixel(x, y + 1) == targetColor) {
                         queue.add(Point(x, y + 1))
                         spanDown = true
-                    } else if (spanDown && y < (height - 1) && image.getPixel(
-                            x,
-                            y + 1
-                        ) != targetColor
-                    ) {
+                    } else if (spanDown && y < (height - 1) && image.getPixel(x, y + 1) != targetColor) {
                         spanDown = false
                     }
                     x++
                 }
-                // 讓main thread去更新一下畫面
+
+                 println(queue.size)
+                // 如果我們在這個while loop內部，一邊確認queue內部需要新增node，一邊invalidate()
+                // 這樣可能會造成queue積累越多。這是因為，我們一邊根據設定bitmap的pixel的值，
+                // 一邊讓main thread執行invalidate()，把paths內部的pixel又畫在bitmap上面，使得 image.getPixel(x, y)可能已經
+                // 先被從綠色改成白色，invalidate()後，又改回綠色
+                // 造成重複放入相同的Point進入queue.size，結果就是沒完沒了的局面
+                // 從queue.size就可以看出來了
                 h.post {
                     invalidate()
                 }
                 node = queue.poll()
             } while (node != null)
+
+            // 如果不想要看到系統無限次的重畫canvas
+            // 可以把invalidate放在這裏
+//            h.post{
+//                invalidate()
+//            }
         }
     }
 

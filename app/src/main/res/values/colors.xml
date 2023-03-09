@@ -5,7 +5,21 @@
     <color name="purple_700">#FF3700B3</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
+
     <color name="less_black">#5A5A5A</color>
+
+
+    <color name="baby_blue">#89CFF0</color>
+    <color name="aqua">#00FFFF</color>
+    <color name="cobalt_blue">#0047AB</color>
+
+    <!--給調色盤用的顏色-->
     <color name="white">#FFFFFFFF</color>
+    <color name="black">#FF000000</color>
+    <color name="blue">#FF0000FF</color>
+    <color name="green">#FF00FF00</color>
+    <color name="red">#ffff0000</color>
+    <color name="yellow">#ffffff00</color>
+    <color name="magenta">#ffff00ff</color>
+    <color name="grey">#f1f1f1</color>
 </resources>
