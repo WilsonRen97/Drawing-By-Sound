@@ -17,4 +17,5 @@
     <string name="eraser_mode">Eraser\nMode</string>
     <string name="fill_mode">Fill\nMode</string>
     <string name="pen_mode">Pen\nMode</string>
+    <string name="load_image">Load previous saved image</string>
 </resources>

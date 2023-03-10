@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
 
+
     <!--    In Android, the <queries> element in the manifest file is used to specify which apps the current app can query for information. -->
     <queries>
         <!--this intent tag means our RecognizerIntent will be handled by the action below-->

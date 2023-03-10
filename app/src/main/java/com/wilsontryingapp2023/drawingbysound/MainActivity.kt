@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -18,9 +19,7 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.google.android.material.button.MaterialButton
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
+import java.io.*
 import java.util.*
 
 
@@ -37,6 +36,7 @@ class MainActivity : AppCompatActivity() {
     private var resultText: TextView? = null
     private var btn: Button? = null
     private var saveBtn: Button? = null
+    private var loadBtn : Button? = null
     private var progressBar: ProgressBar? = null
     private var clearBtn: MaterialButton? = null
     private var fillBtn: MaterialButton? = null
@@ -49,6 +49,7 @@ class MainActivity : AppCompatActivity() {
     private var greenBtn: MaterialButton? = null
     private var yellowBtn: MaterialButton? = null
     private var magentaBtn: MaterialButton? = null
+
 
     private var sr: SpeechRecognizer? = null
     private var all = ""
@@ -92,6 +93,7 @@ class MainActivity : AppCompatActivity() {
         resultText = findViewById(R.id.textView3)
         btn = findViewById(R.id.myBtn)
         saveBtn = findViewById(R.id.saveBtn)
+        loadBtn = findViewById(R.id.loadBtn)
         progressBar = findViewById(R.id.progressBar)
         clearBtn = findViewById(R.id.clearButton)
         fillBtn = findViewById(R.id.fillBtn)
@@ -124,6 +126,10 @@ class MainActivity : AppCompatActivity() {
 
         saveBtn!!.setOnClickListener() { _ ->
             saveToInternalStorage(paintView!!.myBitmap!!)
+        }
+
+        loadBtn!!.setOnClickListener(){ _ ->
+            loadImageFromStorage()
         }
 
         clearBtn!!.setOnClickListener() { _ ->
@@ -253,6 +259,25 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
+    private fun loadImageFromStorage() {
+        val cw = ContextWrapper(this)
+        val directory = cw.getDir("imageDir", Context.MODE_PRIVATE)
+        val myPath = File(directory, "drawing_by_sound_picture.jpg")
+        try {
+            if (myPath.exists()){
+                var bitmapImage = BitmapFactory.decodeStream(FileInputStream(myPath))
+                // bitmapImage is immutable by default; 所以我們要用下面這行code，將他換成mutable
+                var mutableBitmap = bitmapImage.copy(Bitmap.Config.ARGB_8888,true);
+                paintView!!.loadBitmap(mutableBitmap)
+            } else {
+                Toast.makeText(this, "Cannot find image. There is not previous saved image.", Toast.LENGTH_LONG).show()
+            }
+        } catch (e: IOException) {
+            Toast.makeText(this, "We have an error loading the picture", Toast.LENGTH_LONG).show()
+        }
+    }
+
 
     private fun saveToInternalStorage(bitmapImage: Bitmap): String? {
         val cw = ContextWrapper(this)

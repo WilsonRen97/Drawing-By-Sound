@@ -227,6 +227,12 @@ class PaintView : View {
         }
     }
 
+    fun loadBitmap(bitmapImage: Bitmap) {
+        myBitmap = bitmapImage
+        myCanvas = Canvas(myBitmap!!)
+        invalidate()
+    }
+
     fun clear() {
         thread.myHandler!!.post{
             h.post {

@@ -31,6 +31,13 @@
         android:text="@string/save_image"
         />
 
+    <Button
+        android:id="@+id/loadBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/load_image"
+        />
+
     <!--gravity attribute sets the alignment of the content inside the view itself.-->
     <!--layout_gravity attribute, on the other hand, sets the alignment of the view within its parent layout.-->
     <!--如果某個button的文字較多，會被放到下面去。例如，中文的「橡皮擦模式」，所以需要設定android:gravity="center"-->
