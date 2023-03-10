@@ -19,4 +19,6 @@
     <string name="fill_mode">填充模式</string>
     <string name="pen_mode">畫筆模式</string>
     <string name="load_image">加載儲存過的圖片</string>
+    <string name="cannot_find_saved_image">找不到儲存過的圖片</string>
+    <string name="error_loading_picture">加載圖片時發生錯誤</string>
 </resources>

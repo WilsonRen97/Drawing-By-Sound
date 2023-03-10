@@ -18,4 +18,6 @@
     <string name="fill_mode">Fill\nMode</string>
     <string name="pen_mode">Pen\nMode</string>
     <string name="load_image">Load previous saved image</string>
+    <string name="cannot_find_saved_image">Cannot find image. There is not previous saved image.</string>
+    <string name="error_loading_picture">We have an error loading the picture</string>
 </resources>

@@ -271,10 +271,10 @@ class MainActivity : AppCompatActivity() {
                 var mutableBitmap = bitmapImage.copy(Bitmap.Config.ARGB_8888,true);
                 paintView!!.loadBitmap(mutableBitmap)
             } else {
-                Toast.makeText(this, "Cannot find image. There is not previous saved image.", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, R.string.cannot_find_saved_image, Toast.LENGTH_LONG).show()
             }
         } catch (e: IOException) {
-            Toast.makeText(this, "We have an error loading the picture", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, R.string.error_loading_picture, Toast.LENGTH_LONG).show()
         }
     }
 
