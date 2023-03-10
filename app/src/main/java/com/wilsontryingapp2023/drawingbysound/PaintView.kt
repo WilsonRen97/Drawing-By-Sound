@@ -1,6 +1,5 @@
 package com.wilsontryingapp2023.drawingbysound
 
-import android.app.Activity
 import android.content.Context
 import android.graphics.*
 import android.os.Handler
@@ -10,7 +9,6 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.ProgressBar
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 class PaintView : View {
@@ -35,6 +33,8 @@ class PaintView : View {
 
     private var h = Handler(Looper.getMainLooper())
 
+    private var newPath = false
+
     inner class LooperThread : Thread() {
         var myHandler: MyThreadHandler? = null
 
@@ -54,7 +54,7 @@ class PaintView : View {
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {
         // 以下這些設定，是對於整個畫面中的所有Finger Path都適用的總設定
         myPaint = Paint()
-        myPaint!!.isAntiAlias = true // 抗鋸齒效果設定
+        // myPaint!!.isAntiAlias = false // 抗鋸齒效果設定
         myPaint!!.isDither = true
         // Dithering通過交替不同顏色的像素來產生新顏色的錯覺，可以產生color panel上不存在的顏色。
         // 此技術還可用於減少漸變中的條帶或平滑顏色過渡。
@@ -109,11 +109,12 @@ class PaintView : View {
     override fun onDraw(canvas: Canvas) {
         // myCanvas的工作，是將圖案畫在myBitmap上面
         // onDraw的canvas物件的工作，是將myBitmap畫在PaintView上面
-        for (fp in paths) {
-            // 繪製paths時，根據每個path的顏色、寬度來設定paint object
-            myPaint!!.color = fp.color
-            myPaint!!.strokeWidth = fp.strokeWidth.toFloat()
-            myCanvas!!.drawPath(fp.path, myPaint!!)
+
+        // 繪製paths時，根據path的顏色、寬度來設定paint object
+        if (newPath) {
+            myPaint!!.color = paths[paths.size - 1].color
+            myPaint!!.strokeWidth = paths[paths.size - 1].strokeWidth.toFloat()
+            myCanvas!!.drawPath(paths[paths.size - 1].path, myPaint!!)
         }
 
         canvas.drawBitmap(myBitmap!!, 0f, 0f, myBitmapPaint)
@@ -146,6 +147,10 @@ class PaintView : View {
         myPath!!.quadTo(mX, mY, (x + mX) / 2, (y + mY) / 2)
         mX = x
         mY = y
+
+        // 這裡我們也可以比較一下，如果單純的用lineTo()，效果會非常的差，所以用quadTo()是很有用的
+        // myPath!!.lineTo(x, y)
+
     }
 
     private fun touchUp() {
@@ -157,6 +162,7 @@ class PaintView : View {
         var node = node
         val width = image.width
         val height = image.height
+
         if (targetColor != replacementColor) {
             val queue: Queue<Point> = LinkedList()
             do {
@@ -200,12 +206,6 @@ class PaintView : View {
                 }
                 node = queue.poll()
             } while (node != null)
-
-            // 如果不想要看到系統無限次的重畫canvas
-            // 可以把invalidate放在這裏
-//            h.post{
-//                invalidate()
-//            }
         }
     }
 
@@ -258,6 +258,7 @@ class PaintView : View {
         when (event.action) {
             // 如果偵測到手指往下，目前的mode>0代表要畫的是線條
             MotionEvent.ACTION_DOWN -> if (mode > 0) {
+                newPath = true
                 touchStart(event.x, event.y) // 將event的x, y放入touchStart，也就代表，將touch start的起點記錄起來
                 invalidate()
             } else {
@@ -281,6 +282,7 @@ class PaintView : View {
             MotionEvent.ACTION_UP -> if (mode > 0) {
                 touchUp()
                 invalidate()
+                newPath = false
             }
         }
         return true

@@ -3,20 +3,21 @@ package com.wilsontryingapp2023.drawingbysound
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
 import android.graphics.Color
-import android.os.*
+import android.graphics.Paint
+import android.graphics.drawable.ShapeDrawable
+import android.graphics.drawable.shapes.OvalShape
+import android.os.Build
+import android.os.Bundle
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
-import android.util.DisplayMetrics
 import android.util.TypedValue
-import android.widget.Button
-import android.widget.ProgressBar
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import java.util.*
+import com.google.android.material.button.MaterialButton
 
 
 class MainActivity : AppCompatActivity() {
@@ -33,21 +34,26 @@ class MainActivity : AppCompatActivity() {
     private var resultText: TextView? = null
     private var btn: Button? = null
     private var progressBar: ProgressBar? = null
-    private var clearBtn: Button? = null
-    private var fillBtn: Button? = null
-    private var penBtn: Button? = null
-    private var eraserBtn: Button? = null
-    private var blackBtn: Button? = null
-    private var whiteBtn: Button? = null
-    private var redBtn: Button? = null
-    private var blueBtn: Button? = null
-    private var greenBtn: Button? = null
-    private var yellowBtn: Button? = null
-    private var magentaBtn: Button? = null
+    private var clearBtn: MaterialButton? = null
+    private var fillBtn: MaterialButton? = null
+    private var penBtn: MaterialButton? = null
+    private var eraserBtn: MaterialButton? = null
+    private var blackBtn: MaterialButton? = null
+    private var whiteBtn: MaterialButton? = null
+    private var redBtn: MaterialButton? = null
+    private var blueBtn: MaterialButton? = null
+    private var greenBtn: MaterialButton? = null
+    private var yellowBtn: MaterialButton? = null
+    private var magentaBtn: MaterialButton? = null
 
     private var sr: SpeechRecognizer? = null
     private var all = ""
     private val listener: Listener = Listener()
+
+    private var previousBtnIndex = 0
+    private var previousModeIndex = 0
+    private var btnArray : Array<MaterialButton?>? = null
+    private var modeArray : Array<MaterialButton?>? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -91,6 +97,16 @@ class MainActivity : AppCompatActivity() {
         yellowBtn = findViewById(R.id.yellowBtn)
         magentaBtn = findViewById(R.id.magentaBtn)
 
+        modeArray = arrayOf(fillBtn, penBtn, eraserBtn)
+        btnArray = arrayOf(blackBtn, whiteBtn, redBtn, greenBtn, blueBtn, yellowBtn, magentaBtn)
+
+        // 設定最初的顏色是red
+        previousBtnIndex = 2
+        setBtnBorder(redBtn)
+        // 設定最初的mode是pen
+        previousModeIndex = 1
+        setModeBorder(penBtn)
+
 
         resultText!!.text = "聲音辨識結果在這裏"
         btn!!.setOnClickListener() { _ ->
@@ -124,53 +140,102 @@ class MainActivity : AppCompatActivity() {
         fillBtn!!.setOnClickListener() { _ ->
             EraserMode = false
             paintView!!.changeMode(-1)
+
+            setModeBorder(fillBtn)
+            previousModeIndex = 0
         }
 
         penBtn!!.setOnClickListener() { _ ->
             EraserMode = false
             paintView!!.changeMode(1)
+
+            setModeBorder(penBtn)
+            previousModeIndex = 1
         }
 
         eraserBtn!!.setOnClickListener() { _ ->
             paintView!!.changeMode(1)
             paintView!!.changeBrushColor("white")
             EraserMode = true
+
+            setBtnBorder(whiteBtn)
+            previousBtnIndex = 1
+
+            setModeBorder(eraserBtn)
+            previousModeIndex = 2
         }
 
         blackBtn!!.setOnClickListener() { _ ->
             paintView!!.changeBrushColor("black")
             EraserMode = false
+
+            setBtnBorder(blackBtn)
+            previousBtnIndex = 0
         }
 
         whiteBtn!!.setOnClickListener() { _ ->
             paintView!!.changeBrushColor("white")
             EraserMode = false
+
+            setBtnBorder(whiteBtn)
+            previousBtnIndex = 1
         }
 
         redBtn!!.setOnClickListener() { _ ->
             paintView!!.changeBrushColor("red")
             EraserMode = false
+
+            setBtnBorder(redBtn)
+            previousBtnIndex = 2
         }
 
         greenBtn!!.setOnClickListener() { _ ->
             paintView!!.changeBrushColor("green")
             EraserMode = false
+
+            setBtnBorder(greenBtn)
+            previousBtnIndex = 3
         }
 
         blueBtn!!.setOnClickListener() { _ ->
             paintView!!.changeBrushColor("blue")
             EraserMode = false
+
+            setBtnBorder(blueBtn)
+            previousBtnIndex = 4
         }
 
         yellowBtn!!.setOnClickListener() { _ ->
             paintView!!.changeBrushColor("yellow")
             EraserMode = false
+
+            setBtnBorder(yellowBtn)
+            previousBtnIndex = 5
         }
 
         magentaBtn!!.setOnClickListener() { _ ->
             paintView!!.changeBrushColor("magenta")
             EraserMode = false
+
+            setBtnBorder(magentaBtn)
+            previousBtnIndex = 6
         }
+    }
+
+    fun setBtnBorder(button : MaterialButton?) {
+        // 先讓前的button的樣式被去除
+        btnArray!![previousBtnIndex]!!.strokeWidth = 0
+        // 設定心button的樣式
+        button!!.strokeWidth = 10
+        button!!.strokeColor = ColorStateList.valueOf(Color.GRAY)
+    }
+
+    fun setModeBorder(button : MaterialButton?) {
+        // 先讓前的button的樣式被去除
+        modeArray!![previousModeIndex]!!.strokeWidth = 0
+        // 設定心button的樣式
+        button!!.strokeWidth = 10
+        button!!.strokeColor = ColorStateList.valueOf(Color.GRAY)
     }
 
 
@@ -305,6 +370,13 @@ class MainActivity : AppCompatActivity() {
                     paintView!!.changeMode(1)
                     paintView!!.changeBrushColor("white")
                     EraserMode = true
+
+                    setBtnBorder(whiteBtn)
+                    previousBtnIndex = 1
+
+                    setModeBorder(eraserBtn)
+                    previousModeIndex = 2
+
                     return // 可以讓for loop不會繼續運行
                 }
                 // 如果是填滿模式的話，不需要加入return，因為我們可以希望可以讀取「fill green」這種指令
@@ -328,8 +400,6 @@ class MainActivity : AppCompatActivity() {
             // 如果指令中不包含pen或是fill的話，就不需要change mode
             // 如果我們是在pen指令或是fill指令的話，就執行下面的程式碼
             // clear與eraser有return keyword，所以不會執行到if這邊。所以我們可以檢查pen以及fill即可
-            println(penCommand)
-            println(fillCommand)
             if (penCommand && fillCommand) {
                 Toast.makeText(
                     applicationContext,
@@ -339,7 +409,11 @@ class MainActivity : AppCompatActivity() {
                 return // 為了不讓顏色改變，所以這裡直接return即可
             } else if (penCommand) {
                 paintView!!.changeMode(1)
+                setModeBorder(penBtn)
+                previousModeIndex = 1
             } else if (fillCommand) {
+                setModeBorder(fillBtn)
+                previousModeIndex = 0
                 paintView!!.changeMode(-1)
             }
 
@@ -347,7 +421,38 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(applicationContext, "No new color detected.", Toast.LENGTH_LONG)
                     .show()
             } else if (colors.size == 1) {
-                paintView!!.changeBrushColor(parseColor(colors[0]))
+                val colorResult =parseColor(colors[0])
+
+                if (colorResult == "black") {
+                    setBtnBorder(blackBtn)
+                    previousBtnIndex = 0
+                    paintView!!.changeBrushColor("black")
+                } else if (colorResult == "white") {
+                    setBtnBorder(whiteBtn)
+                    previousBtnIndex = 1
+                    paintView!!.changeBrushColor("white")
+                } else if (colorResult == "red") {
+                    setBtnBorder(redBtn)
+                    previousBtnIndex = 2
+                    paintView!!.changeBrushColor("red")
+                } else if (colorResult == "green") {
+                    setBtnBorder(greenBtn)
+                    previousBtnIndex = 3
+                    paintView!!.changeBrushColor("green")
+                } else if (colorResult == "blue") {
+                    setBtnBorder(blueBtn)
+                    previousBtnIndex = 4
+                    paintView!!.changeBrushColor("blue")
+                } else if (colorResult == "yellow") {
+                    setBtnBorder(yellowBtn)
+                    previousBtnIndex = 5
+                    paintView!!.changeBrushColor("yellow")
+                } else if (colorResult == "magenta") {
+                    setBtnBorder(magentaBtn)
+                    previousBtnIndex = 6
+                    paintView!!.changeBrushColor("magenta")
+                }
+
             } else {
                 Toast.makeText(
                     applicationContext,
