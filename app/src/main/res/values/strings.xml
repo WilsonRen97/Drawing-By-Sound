@@ -1,3 +1,20 @@
 <resources>
     <string name="app_name">Drawing by Sound</string>
+    <string name="permissionGiven">Sound permission is given!</string>
+    <string name="permissionDeny">Permission denied</string>
+    <string name="cannotProvideRecognition">Cannot provide sound recognition function</string>
+    <string name="cannotProvideRecognition2">Cannot provide sound recognition function. Please give sound recording permission first.</string>
+    <string name="soundResult">The result of sound recognition is here: </string>
+    <string name="receiving_sound">Receiving sound commands</string>
+    <string name="saveImage">Image has been saved.</string>
+    <string name="soundBtnText">Tap to give sound command</string>
+    <string name="no_sound_text">The result of sound recognition is : the device did not hear any sound.</string>
+    <string name="deny_pen_fill_together">You cannot ask for fill and pen at the same time.</string>
+    <string name="noColor">No new color detected.</string>
+    <string name="multiple_color">Multiple color detected. Please provide only one color in your sentence.</string>
+    <string name="save_image">Save image to internal storage</string>
+    <string name="clear_mode">Clear\nScreen</string>
+    <string name="eraser_mode">Eraser\nMode</string>
+    <string name="fill_mode">Fill\nMode</string>
+    <string name="pen_mode">Pen\nMode</string>
 </resources>

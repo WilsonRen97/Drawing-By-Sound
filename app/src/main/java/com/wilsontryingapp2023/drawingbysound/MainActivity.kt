@@ -1,13 +1,13 @@
 package com.wilsontryingapp2023.drawingbysound
 
 import android.Manifest
+import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
+import android.graphics.Bitmap
 import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.drawable.ShapeDrawable
-import android.graphics.drawable.shapes.OvalShape
 import android.os.Build
 import android.os.Bundle
 import android.speech.RecognitionListener
@@ -18,13 +18,16 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.google.android.material.button.MaterialButton
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
 
     companion object {
-        private const val AUDIO_RECORD_REQUEST_CODE =
-            1 // this could be any value. 我們這裡用不到，但還是要提供一下。
+        private const val AUDIO_RECORD_REQUEST_CODE = 1
         var EraserMode = false
         var isListening: Boolean = false
     }
@@ -33,6 +36,7 @@ class MainActivity : AppCompatActivity() {
     private var paintView: PaintView? = null
     private var resultText: TextView? = null
     private var btn: Button? = null
+    private var saveBtn: Button? = null
     private var progressBar: ProgressBar? = null
     private var clearBtn: MaterialButton? = null
     private var fillBtn: MaterialButton? = null
@@ -52,37 +56,42 @@ class MainActivity : AppCompatActivity() {
 
     private var previousBtnIndex = 0
     private var previousModeIndex = 0
-    private var btnArray : Array<MaterialButton?>? = null
-    private var modeArray : Array<MaterialButton?>? = null
+    private var btnArray: Array<MaterialButton?>? = null
+    private var modeArray: Array<MaterialButton?>? = null
 
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        when (requestCode) {
+            AUDIO_RECORD_REQUEST_CODE -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // Permission has been granted, perform action
+                    setUpSoundWork()
+                } else {
+                    // Permission has been denied, show message or handle error
+                    Toast.makeText(this, R.string.permissionDeny, Toast.LENGTH_SHORT).show()
+                    resultText!!.text = resources.getString(R.string.cannotProvideRecognition)
+                    btn!!.setOnClickListener() { _ ->
+                        Toast.makeText(this, R.string.cannotProvideRecognition2, Toast.LENGTH_SHORT).show()
+                    }
+                }
+                return
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        //  獲得使用者的聲音錄製許可
-        if (!isRecordAudioPermissionGranted()) {
-            Toast.makeText(applicationContext, "需要聲音錄製許可", Toast.LENGTH_LONG).show()
-        } else {
-            Toast.makeText(applicationContext, "聲音錄製許可已經獲准", Toast.LENGTH_LONG).show()
-        }
-
-        // SpeechRecognizer is a class provided by the Android platform that performs speech recognition.
-        // It provides methods to start and stop speech recognition, set various options for the recognition task (e.g. language, maximum results)
-        // It uses Android's own speech recognition engine, which is installed on the device and does not require any additional apps to be installed.
-        // The engine listens to audio input from the device's microphone and performs speech recognition on the audio.
-        sr = SpeechRecognizer.createSpeechRecognizer(this)
-
-        // RecognitionListener, on the other hand, is an interface provided by the Android platform that allows developers to receive notifications
-        // about the progress and results of a speech recognition task.
-        // It defines a number of callback methods that are invoked during the recognition process,
-        // such as onBeginningOfSpeech(), onResults(), and onError().
-        sr!!.setRecognitionListener(listener)
-
 
         setContentView(R.layout.activity_main)
         paintView = findViewById(R.id.paint_view)
         resultText = findViewById(R.id.textView3)
         btn = findViewById(R.id.myBtn)
+        saveBtn = findViewById(R.id.saveBtn)
         progressBar = findViewById(R.id.progressBar)
         clearBtn = findViewById(R.id.clearButton)
         fillBtn = findViewById(R.id.fillBtn)
@@ -107,29 +116,14 @@ class MainActivity : AppCompatActivity() {
         previousModeIndex = 1
         setModeBorder(penBtn)
 
+        //  獲得使用者的聲音錄製許可
+        if (isRecordAudioPermissionGranted()) {
+            Toast.makeText(applicationContext, R.string.permissionGiven, Toast.LENGTH_LONG).show()
+            setUpSoundWork()
+        }
 
-        resultText!!.text = "聲音辨識結果在這裏"
-        btn!!.setOnClickListener() { _ ->
-            if (!isListening) {
-                isListening = true
-                // 改變button顏色與文字
-                btn!!.text = "正在接收語音指令"
-                btn!!.setTextColor(Color.WHITE)
-                btn!!.setBackgroundColor(Color.BLACK)
-
-                // 開啟語音辨識功能
-                val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
-                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "en-US")
-                // intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "cmn-Hant-TW")
-                // intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "cmn-Hans-CN")
-                intent.putExtra(
-                    RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-                    RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
-                )
-                intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 5)
-                sr!!.startListening(intent)
-                println("Start Listening....")
-            }
+        saveBtn!!.setOnClickListener() { _ ->
+            saveToInternalStorage(paintView!!.myBitmap!!)
         }
 
         clearBtn!!.setOnClickListener() { _ ->
@@ -222,7 +216,73 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun setBtnBorder(button : MaterialButton?) {
+    private fun setUpSoundWork() {
+        // SpeechRecognizer is a class provided by the Android platform that performs speech recognition.
+        // It provides methods to start and stop speech recognition, set various options for the recognition task (e.g. language, maximum results)
+        // It uses Android's own speech recognition engine, which is installed on the device and does not require any additional apps to be installed.
+        // The engine listens to audio input from the device's microphone and performs speech recognition on the audio.
+        sr = SpeechRecognizer.createSpeechRecognizer(this)
+
+        // RecognitionListener, on the other hand, is an interface provided by the Android platform that allows developers to receive notifications
+        // about the progress and results of a speech recognition task.
+        // It defines a number of callback methods that are invoked during the recognition process,
+        // such as onBeginningOfSpeech(), onResults(), and onError().
+        sr!!.setRecognitionListener(listener)
+
+        resultText!!.text = resources.getString(R.string.soundResult)
+        btn!!.setOnClickListener() { _ ->
+            if (!isListening) {
+                isListening = true
+                // 改變button顏色與文字
+                btn!!.text = resources.getString(R.string.receiving_sound)
+                btn!!.setTextColor(Color.WHITE)
+                btn!!.setBackgroundColor(Color.BLACK)
+
+                // 開啟語音辨識功能
+                val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "en-US")
+                // intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "cmn-Hant-TW")
+                // intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "cmn-Hans-CN")
+                intent.putExtra(
+                    RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                    RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+                )
+                intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 5)
+                sr!!.startListening(intent)
+                println("Start Listening....")
+            }
+        }
+    }
+
+    private fun saveToInternalStorage(bitmapImage: Bitmap): String? {
+        val cw = ContextWrapper(this)
+        // path to /data/data/yourapp/app_data/imageDir
+        val directory = cw.getDir("imageDir", Context.MODE_PRIVATE)
+        // Create imageDir
+        val mypath = File(directory, "drawing_by_sound_picture.jpg")
+        var fos: FileOutputStream? = null
+        try {
+            fos = FileOutputStream(mypath)
+            // Use the compress method on the BitMap object to write image to the OutputStream
+            bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, fos)
+            Toast.makeText(
+                this,
+                R.string.saveImage,
+                Toast.LENGTH_LONG
+            ).show()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            try {
+                fos!!.close()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+        return directory.absolutePath
+    }
+
+    fun setBtnBorder(button: MaterialButton?) {
         // 先讓前的button的樣式被去除
         btnArray!![previousBtnIndex]!!.strokeWidth = 0
         // 設定心button的樣式
@@ -230,7 +290,7 @@ class MainActivity : AppCompatActivity() {
         button!!.strokeColor = ColorStateList.valueOf(Color.GRAY)
     }
 
-    fun setModeBorder(button : MaterialButton?) {
+    fun setModeBorder(button: MaterialButton?) {
         // 先讓前的button的樣式被去除
         modeArray!![previousModeIndex]!!.strokeWidth = 0
         // 設定心button的樣式
@@ -264,6 +324,7 @@ class MainActivity : AppCompatActivity() {
                 return true
             } else {
                 // requestPermissions 是Activity class的method
+                // we are requesting permission from the user
                 requestPermissions(
                     arrayOf(Manifest.permission.RECORD_AUDIO),
                     AUDIO_RECORD_REQUEST_CODE
@@ -296,23 +357,25 @@ class MainActivity : AppCompatActivity() {
         }
 
         private fun restoreBtnStyling() {
-            // fetch color programmatically
+            // fetch color from theme.xml programmatically
+            // TypedValue是Container for a dynamically typed data value.
+            // Primarily used with Resources for holding resource values.
             val typedValue = TypedValue()
             theme.resolveAttribute(
                 com.google.android.material.R.attr.colorOnPrimary,
                 typedValue,
                 true
-            );
+            )
             val textColor = ContextCompat.getColor(applicationContext, typedValue.resourceId)
             theme.resolveAttribute(
                 com.google.android.material.R.attr.colorPrimary,
                 typedValue,
                 true
-            );
+            )
             val backgroundColor = ContextCompat.getColor(applicationContext, typedValue.resourceId)
 
             // 設定isListening是false，以及將button的顏色、文字、背景恢復到原本的設定
-            btn!!.text = "點擊給予語音指令"
+            btn!!.text = resources.getString(R.string.soundBtnText)
             btn!!.setTextColor(textColor)
             btn!!.setBackgroundColor(backgroundColor)
             isListening = false
@@ -327,7 +390,7 @@ class MainActivity : AppCompatActivity() {
         // 如果使用者沒有在時間內講出任何話，就會進入onError
         override fun onError(error: Int) {
             restoreBtnStyling()
-            resultText!!.text = "聲音辨識的結果為：沒有聽到任何聲音"
+            resultText!!.text = resources.getString(R.string.no_sound_text)
             println("error happened...")
         }
 
@@ -343,9 +406,10 @@ class MainActivity : AppCompatActivity() {
             */
 
             // here, we just take the first result
-            println(data)
+            // println(data)
             all = data!![0].toString()
-            resultText!!.text = "聲音辨識結果是：$all" // Get This one back later
+
+            resultText!!.text = resources.getString(R.string.soundResult) + all // Get This one back later
 
 
             // making the string command change the pen color
@@ -403,7 +467,7 @@ class MainActivity : AppCompatActivity() {
             if (penCommand && fillCommand) {
                 Toast.makeText(
                     applicationContext,
-                    "You cannot ask for fill and pen at the same time.",
+                    R.string.deny_pen_fill_together,
                     Toast.LENGTH_LONG
                 ).show()
                 return // 為了不讓顏色改變，所以這裡直接return即可
@@ -418,10 +482,10 @@ class MainActivity : AppCompatActivity() {
             }
 
             if (colors.size == 0) {
-                Toast.makeText(applicationContext, "No new color detected.", Toast.LENGTH_LONG)
+                Toast.makeText(applicationContext, R.string.noColor, Toast.LENGTH_LONG)
                     .show()
             } else if (colors.size == 1) {
-                val colorResult =parseColor(colors[0])
+                val colorResult = parseColor(colors[0])
 
                 if (colorResult == "black") {
                     setBtnBorder(blackBtn)
@@ -456,7 +520,7 @@ class MainActivity : AppCompatActivity() {
             } else {
                 Toast.makeText(
                     applicationContext,
-                    "Multiple color detected. Please provide only one color in your sentence.",
+                    R.string.multiple_color,
                     Toast.LENGTH_LONG
                 ).show()
             }

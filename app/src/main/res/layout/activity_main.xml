@@ -21,10 +21,22 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:text="點擊給予語音指令"
+        android:text="@string/soundBtnText"
         />
 
+    <Button
+        android:id="@+id/saveBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/save_image"
+        />
+
+    <!--gravity attribute sets the alignment of the content inside the view itself.-->
+    <!--layout_gravity attribute, on the other hand, sets the alignment of the view within its parent layout.-->
+    <!--如果某個button的文字較多，會被放到下面去。例如，中文的「橡皮擦模式」，所以需要設定android:gravity="center"-->
+    <!--或是我們也可以在Eraser Mode的button上面設定layout_gravity="center"，會出現一樣的效果-->
     <LinearLayout
+        android:gravity="center"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -34,7 +46,8 @@
             android:id="@+id/clearButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="清除畫面"
+            android:textSize="10sp"
+            android:text="@string/clear_mode"
             android:layout_margin="5dp"
             android:layout_weight="1"
             />
@@ -42,26 +55,29 @@
             android:id="@+id/fillBtn"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="填滿模式"
+            android:text="@string/fill_mode"
             android:layout_margin="5dp"
             android:layout_weight="1"
+            android:textSize="10sp"
             />
         <com.google.android.material.button.MaterialButton
             android:id="@+id/penBtn"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="畫筆模式"
+            android:text="@string/pen_mode"
             android:layout_margin="5dp"
             android:layout_weight="1"
+            android:textSize="10sp"
             />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/eraserBtn"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="橡皮擦模式"
+            android:text="@string/eraser_mode"
             android:layout_margin="5dp"
             android:layout_weight="1"
+            android:textSize="10sp"
             />
     </LinearLayout>
 
@@ -75,8 +91,8 @@
         <!-- 一定需要設定inset才會看起來是圓形-->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/black_btn"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_margin="5dp"
             android:backgroundTint="@color/black"
             android:insetLeft="0dp"
@@ -84,12 +100,13 @@
             android:insetRight="0dp"
             android:insetBottom="0dp"
             app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Circle"
+            android:contentDescription="black color button"
             />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/whiteBtn"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_margin="5dp"
             android:backgroundTint="@color/white"
             android:insetLeft="0dp"
@@ -97,13 +114,14 @@
             android:insetRight="0dp"
             android:insetBottom="0dp"
             app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Circle"
+            android:contentDescription="white color button"
             />
 
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/redBtn"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:backgroundTint="@color/red"
             android:layout_margin="5dp"
             android:insetLeft="0dp"
@@ -111,12 +129,13 @@
             android:insetRight="0dp"
             android:insetBottom="0dp"
             app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Circle"
+            android:contentDescription="red color button"
             />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/greenBtn"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:backgroundTint="@color/green"
             android:layout_margin="5dp"
             android:insetLeft="0dp"
@@ -124,12 +143,13 @@
             android:insetRight="0dp"
             android:insetBottom="0dp"
             app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Circle"
+            android:contentDescription="green color button"
             />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/blueBtn"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:backgroundTint="@color/blue"
             android:layout_margin="5dp"
             android:insetLeft="0dp"
@@ -137,6 +157,21 @@
             android:insetRight="0dp"
             android:insetBottom="0dp"
             app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Circle"
+            android:contentDescription="blue color button"
+            />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/yellowBtn"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:backgroundTint="@color/yellow"
+            android:layout_margin="5dp"
+            android:insetLeft="0dp"
+            android:insetTop="0dp"
+            android:insetRight="0dp"
+            android:insetBottom="0dp"
+            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Circle"
+            android:contentDescription="yellow color button"
             />
     </LinearLayout>
 
@@ -146,22 +181,9 @@
         android:layout_height="wrap_content">
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/yellowBtn"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:backgroundTint="@color/yellow"
-            android:layout_margin="5dp"
-            android:insetLeft="0dp"
-            android:insetTop="0dp"
-            android:insetRight="0dp"
-            android:insetBottom="0dp"
-            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Circle"
-            />
-
-        <com.google.android.material.button.MaterialButton
             android:id="@+id/magentaBtn"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:backgroundTint="@color/magenta"
             android:layout_margin="5dp"
             android:insetLeft="0dp"
@@ -169,6 +191,7 @@
             android:insetRight="0dp"
             android:insetBottom="0dp"
             app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Circle"
+            android:contentDescription="magenta color button"
             />
 
 

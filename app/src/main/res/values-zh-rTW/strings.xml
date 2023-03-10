@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">聲音控制繪圖</string>
+    <string name="permissionGiven">已授予App錄音權限！</string>
+    <string name="permissionDeny">錄音權限被拒絕</string>
+    <string name="cannotProvideRecognition">無法提供聲音識別功能</string>
+    <string name="cannotProvideRecognition2">無法提供聲音識別功能。請先給允許應用程式錄音。</string>
+    <string name="soundResult">聲音識別結果在這裡：</string>
+    <string name="receiving_sound">接收聲音指令</string>
+    <string name="saveImage">圖像已保存</string>
+    <string name="soundBtnText">點擊以給予聲音指令</string>
+    <string name="no_sound_text">聲音識別結果為：設備沒有聽到任何聲音</string>
+    <string name="deny_pen_fill_together">你不能同時請求填充效果與畫筆效果。</string>
+    <string name="noColor">未檢測到新顏色</string>
+    <string name="multiple_color">檢測到多種顏色。請在您的句子中只提供一種顏色。</string>
+    <string name="save_image">圖像已儲存在到手機內部空間</string>
+    <string name="clear_mode">清除屏幕</string>
+    <string name="eraser_mode">橡皮擦\n模式</string>
+    <string name="fill_mode">填充模式</string>
+    <string name="pen_mode">畫筆模式</string>
+</resources>

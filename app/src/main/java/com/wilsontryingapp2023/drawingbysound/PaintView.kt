@@ -21,7 +21,7 @@ class PaintView : View {
 
     // myCanvas是畫筆、myPaint是畫筆的設定，例如畫筆的顏色、粗度等等、myBitmap是畫紙
     private var myPaint: Paint? = null
-    private var myBitmap: Bitmap? = null
+    var myBitmap: Bitmap? = null
     private var myCanvas: Canvas? = null
     private var myBitmapPaint: Paint? = null
 
@@ -89,6 +89,7 @@ class PaintView : View {
         // 取得PaintView的viewWidth, viewHeight之後，用來設定myBitmap
         myBitmap = Bitmap.createBitmap(viewWidth, viewHeight, Bitmap.Config.ARGB_8888)
         // Bitmap.Config.ARGB_8888 parameter specifies that the bitmap should use 32 bits per pixel, with alpha, red, green, and blue channels each using 8 bits.
+        myBitmap!!.eraseColor(Color.WHITE) // Fill the bitmap with color white
         myCanvas = Canvas(myBitmap!!)
     }
 
@@ -194,7 +195,7 @@ class PaintView : View {
                     x++
                 }
 
-                 println(queue.size)
+                 // println(queue.size)
                 // 如果我們在這個while loop內部，一邊確認queue內部需要新增node，一邊invalidate()
                 // 這樣可能會造成queue積累越多。這是因為，我們一邊根據設定bitmap的pixel的值，
                 // 一邊讓main thread執行invalidate()，把paths內部的pixel又畫在bitmap上面，使得 image.getPixel(x, y)可能已經
