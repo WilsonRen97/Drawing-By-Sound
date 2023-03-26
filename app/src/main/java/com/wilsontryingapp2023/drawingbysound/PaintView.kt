@@ -9,6 +9,8 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.ProgressBar
 import java.util.*
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
 
 class PaintView : View {
@@ -31,25 +33,10 @@ class PaintView : View {
     private var mX = 0f
     private var mY = 0f
 
+    private var executor: ExecutorService = Executors.newSingleThreadExecutor()
     private var h = Handler(Looper.getMainLooper())
 
     private var newPath = false
-
-    inner class LooperThread : Thread() {
-        var myHandler: MyThreadHandler? = null
-
-        inner class MyThreadHandler(looper : Looper) : Handler(looper) {
-        }
-
-        // override Thread class的run()
-        override fun run() {
-            Looper.prepare()
-            myHandler = MyThreadHandler(Looper.myLooper()!!)
-            Looper.loop() // Run the message queue in this thread
-        }
-    }
-
-    private var thread : LooperThread = LooperThread()
 
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {
         // 以下這些設定，是對於整個畫面中的所有Finger Path都適用的總設定
@@ -72,8 +59,6 @@ class PaintView : View {
         currentColor = Color.RED
         myBitmapPaint = Paint()
         myBitmapPaint!!.isDither = true
-
-        thread.start()
     }
 
 
@@ -215,8 +200,7 @@ class PaintView : View {
          pt: Point,
          targetColor: Int,
          replacementColor: Int) {
-
-        thread.myHandler!!.post{
+        executor.execute {
             h.post {
                 progressBar!!.visibility = View.VISIBLE
             }
@@ -234,7 +218,7 @@ class PaintView : View {
     }
 
     fun clear() {
-        thread.myHandler!!.post{
+        executor.execute {
             h.post {
                 progressBar!!.visibility = View.VISIBLE
             }
