@@ -33,6 +33,12 @@ class PaintView : View {
     private var mX = 0f
     private var mY = 0f
 
+    // 我們用到thread的地方有兩個。第一個位置在clear內部，第二個位置在fill。
+    // 這裡我們使用newSingleThreadExecutor，而不是讓fill, clear個別去launch a new thread的原因是因為，
+    // 如果fill還沒結束時，使用者就按下clear，那兩個thread就會打架
+    // 造成結果不好。因此，我們用newSingleThreadExecutor()，讓這些UI介面上的按鈕被按下後，
+    // 任務會被放入queue依序去執行
+    // 這裡當然也可以選用Handler，概念與邏輯都是一樣的！！
     private var executor: ExecutorService = Executors.newSingleThreadExecutor()
     private var h = Handler(Looper.getMainLooper())
 
