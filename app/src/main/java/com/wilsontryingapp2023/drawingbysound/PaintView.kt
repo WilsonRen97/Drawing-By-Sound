@@ -11,6 +11,7 @@ import android.widget.ProgressBar
 import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import java.util.concurrent.locks.ReentrantLock
 
 
 class PaintView : View {
@@ -40,7 +41,15 @@ class PaintView : View {
     // 任務會被放入queue依序去執行
     // 這裡當然也可以選用Handler，概念與邏輯都是一樣的！！
     private var executor: ExecutorService = Executors.newSingleThreadExecutor()
+
+    // 或者，我們也可以使用在fill以及clear個別去launch一個thread
+    // 要避免race condition的話，就使用lock即可
+    // 我們的shared resources是myBitmap，所以fill以及clear有用到myBitmap的部分，使用前需要先上鎖
+    // 下面的程式碼是使用lock來達到mutex的效果
+
     private var h = Handler(Looper.getMainLooper())
+
+    private var lock : ReentrantLock = ReentrantLock()
 
     private var newPath = false
 
@@ -206,15 +215,26 @@ class PaintView : View {
          pt: Point,
          targetColor: Int,
          replacementColor: Int) {
-        executor.execute {
+        Thread {
             h.post {
                 progressBar!!.visibility = View.VISIBLE
             }
+            lock.lock()
             floodFill(bmp, pt, targetColor, replacementColor)
+            lock.unlock()
             h.post {
                 progressBar!!.visibility = View.INVISIBLE
             }
-        }
+        }.start()
+//        executor.execute {
+//            h.post {
+//                progressBar!!.visibility = View.VISIBLE
+//            }
+//            floodFill(bmp, pt, targetColor, replacementColor)
+//            h.post {
+//                progressBar!!.visibility = View.INVISIBLE
+//            }
+//        }
     }
 
     fun loadBitmap(bitmapImage: Bitmap) {
@@ -224,12 +244,12 @@ class PaintView : View {
     }
 
     fun clear() {
-        executor.execute {
+        Thread {
             h.post {
                 progressBar!!.visibility = View.VISIBLE
             }
-
             paths.clear()
+            lock.lock()
             val width = myBitmap!!.width
             val height = myBitmap!!.height
             for (i in 0 until width) {
@@ -241,10 +261,32 @@ class PaintView : View {
                     invalidate()
                 }
             }
+            lock.unlock()
             h.post {
                 progressBar!!.visibility = View.INVISIBLE
             }
-        }
+        }.start()
+//        executor.execute {
+//            h.post {
+//                progressBar!!.visibility = View.VISIBLE
+//            }
+//
+//            paths.clear()
+//            val width = myBitmap!!.width
+//            val height = myBitmap!!.height
+//            for (i in 0 until width) {
+//                for (j in 0 until height) {
+//                    myBitmap!!.setPixel(i, j, Color.WHITE)
+//                }
+//                // 每當一個直列的pixels被設定成白色後，就讓main thread做invalidate()一次
+//                h.post {
+//                    invalidate()
+//                }
+//            }
+//            h.post {
+//                progressBar!!.visibility = View.INVISIBLE
+//            }
+//        }
     }
 
 
