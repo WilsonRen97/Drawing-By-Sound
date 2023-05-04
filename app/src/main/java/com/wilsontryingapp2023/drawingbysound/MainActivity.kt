@@ -11,6 +11,8 @@ import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
@@ -24,7 +26,6 @@ import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
-
     companion object {
         private const val AUDIO_RECORD_REQUEST_CODE = 1
         var EraserMode = false
@@ -169,6 +170,12 @@ class MainActivity : AppCompatActivity() {
             paintView!!.changeBrushColor("black")
             EraserMode = false
 
+            // 如果目前的mode是畫筆或是橡皮擦的話，只要按下任一個圓形調色盤
+            // 就將mode強制轉回畫筆
+            if (paintView!!.getMode() == 1) {
+                setModeBorder(penBtn)
+                previousModeIndex = 1
+            }
             setBtnBorder(blackBtn)
             previousBtnIndex = 0
         }
@@ -177,6 +184,10 @@ class MainActivity : AppCompatActivity() {
             paintView!!.changeBrushColor("white")
             EraserMode = false
 
+            if (paintView!!.getMode() == 1) {
+                setModeBorder(penBtn)
+                previousModeIndex = 1
+            }
             setBtnBorder(whiteBtn)
             previousBtnIndex = 1
         }
@@ -185,6 +196,10 @@ class MainActivity : AppCompatActivity() {
             paintView!!.changeBrushColor("red")
             EraserMode = false
 
+            if (paintView!!.getMode() == 1) {
+                setModeBorder(penBtn)
+                previousModeIndex = 1
+            }
             setBtnBorder(redBtn)
             previousBtnIndex = 2
         }
@@ -193,6 +208,10 @@ class MainActivity : AppCompatActivity() {
             paintView!!.changeBrushColor("green")
             EraserMode = false
 
+            if (paintView!!.getMode() == 1) {
+                setModeBorder(penBtn)
+                previousModeIndex = 1
+            }
             setBtnBorder(greenBtn)
             previousBtnIndex = 3
         }
@@ -201,6 +220,10 @@ class MainActivity : AppCompatActivity() {
             paintView!!.changeBrushColor("blue")
             EraserMode = false
 
+            if (paintView!!.getMode() == 1) {
+                setModeBorder(penBtn)
+                previousModeIndex = 1
+            }
             setBtnBorder(blueBtn)
             previousBtnIndex = 4
         }
@@ -209,6 +232,10 @@ class MainActivity : AppCompatActivity() {
             paintView!!.changeBrushColor("yellow")
             EraserMode = false
 
+            if (paintView!!.getMode() == 1) {
+                setModeBorder(penBtn)
+                previousModeIndex = 1
+            }
             setBtnBorder(yellowBtn)
             previousBtnIndex = 5
         }
@@ -217,6 +244,10 @@ class MainActivity : AppCompatActivity() {
             paintView!!.changeBrushColor("magenta")
             EraserMode = false
 
+            if (paintView!!.getMode() == 1) {
+                setModeBorder(penBtn)
+                previousModeIndex = 1
+            }
             setBtnBorder(magentaBtn)
             previousBtnIndex = 6
         }
@@ -318,7 +349,7 @@ class MainActivity : AppCompatActivity() {
     fun setModeBorder(button: MaterialButton?) {
         // 先讓前的button的樣式被去除
         modeArray!![previousModeIndex]!!.strokeWidth = 0
-        // 設定心button的樣式
+        // 設定button的樣式
         button!!.strokeWidth = 10
         button!!.strokeColor = ColorStateList.valueOf(Color.GRAY)
     }

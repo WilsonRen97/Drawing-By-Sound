@@ -56,7 +56,7 @@ class PaintView : View {
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {
         // 以下這些設定，是對於整個畫面中的所有Finger Path都適用的總設定
         myPaint = Paint()
-        // myPaint!!.isAntiAlias = false // 抗鋸齒效果設定
+        myPaint!!.isAntiAlias = false // 抗鋸齒效果設定成false，讓fill algorithm可以運作完全
         myPaint!!.isDither = true
         // Dithering通過交替不同顏色的像素來產生新顏色的錯覺，可以產生color panel上不存在的顏色。
         // 此技術還可用於減少漸變中的條帶或平滑顏色過渡。
@@ -91,6 +91,10 @@ class PaintView : View {
         // Bitmap.Config.ARGB_8888 parameter specifies that the bitmap should use 32 bits per pixel, with alpha, red, green, and blue channels each using 8 bits.
         myBitmap!!.eraseColor(Color.WHITE) // Fill the bitmap with color white
         myCanvas = Canvas(myBitmap!!)
+    }
+
+    fun getMode() : Int {
+        return mode
     }
 
     fun useProgressBar(bar : ProgressBar) {
