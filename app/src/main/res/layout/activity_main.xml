@@ -87,115 +87,124 @@
             />
     </LinearLayout>
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/grey"
-        >
-
-        <!-- 一定需要設定inset才會看起來是圓形-->
-        <!-- width, height先設定50dp，再用程式碼換成1/7的螢幕寬度-->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/black_btn"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:backgroundTint="@color/black"
-            android:insetLeft="0dp"
-            android:insetTop="0dp"
-            android:insetRight="0dp"
-            android:insetBottom="0dp"
-            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Circle"
-            android:contentDescription="black color button"
-            />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/whiteBtn"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:backgroundTint="@color/white"
-            android:insetLeft="0dp"
-            android:insetTop="0dp"
-            android:insetRight="0dp"
-            android:insetBottom="0dp"
-            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Circle"
-            android:contentDescription="white color button"
-            />
-
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/redBtn"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:backgroundTint="@color/red"
-            android:insetLeft="0dp"
-            android:insetTop="0dp"
-            android:insetRight="0dp"
-            android:insetBottom="0dp"
-            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Circle"
-            android:contentDescription="red color button"
-            />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/greenBtn"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:backgroundTint="@color/green"
-            android:insetLeft="0dp"
-            android:insetTop="0dp"
-            android:insetRight="0dp"
-            android:insetBottom="0dp"
-            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Circle"
-            android:contentDescription="green color button"
-            />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/blueBtn"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:backgroundTint="@color/blue"
-            android:insetLeft="0dp"
-            android:insetTop="0dp"
-            android:insetRight="0dp"
-            android:insetBottom="0dp"
-            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Circle"
-            android:contentDescription="blue color button"
-            />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/yellowBtn"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:backgroundTint="@color/yellow"
-            android:insetLeft="0dp"
-            android:insetTop="0dp"
-            android:insetRight="0dp"
-            android:insetBottom="0dp"
-            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Circle"
-            android:contentDescription="yellow color button"
-            />
-    </LinearLayout>
-
-    <LinearLayout
-        android:orientation="horizontal"
+    <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/grey"
+            >
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/magentaBtn"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:backgroundTint="@color/magenta"
-            android:insetLeft="0dp"
-            android:insetTop="0dp"
-            android:insetRight="0dp"
-            android:insetBottom="0dp"
-            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Circle"
-            android:contentDescription="magenta color button"
-            />
+            <!-- 一定需要設定inset才會看起來是圓形-->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/black_btn"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+
+                android:layout_margin="5dp"
+                android:backgroundTint="@color/black"
+                android:insetLeft="0dp"
+                android:insetTop="0dp"
+                android:insetRight="0dp"
+                android:insetBottom="0dp"
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Circle"
+                android:contentDescription="black color button"
+                />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/whiteBtn"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+
+                android:layout_margin="5dp"
+                android:backgroundTint="@color/white"
+                android:insetLeft="0dp"
+                android:insetTop="0dp"
+                android:insetRight="0dp"
+                android:insetBottom="0dp"
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Circle"
+                android:contentDescription="white color button"
+                />
 
 
-    </LinearLayout>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/redBtn"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+
+                android:layout_margin="5dp"
+                android:backgroundTint="@color/red"
+                android:insetLeft="0dp"
+                android:insetTop="0dp"
+                android:insetRight="0dp"
+                android:insetBottom="0dp"
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Circle"
+                android:contentDescription="red color button"
+                />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/greenBtn"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+
+                android:layout_margin="5dp"
+                android:backgroundTint="@color/green"
+                android:insetLeft="0dp"
+                android:insetTop="0dp"
+                android:insetRight="0dp"
+                android:insetBottom="0dp"
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Circle"
+                android:contentDescription="green color button"
+                />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/blueBtn"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+
+                android:layout_margin="5dp"
+                android:backgroundTint="@color/blue"
+                android:insetLeft="0dp"
+                android:insetTop="0dp"
+                android:insetRight="0dp"
+                android:insetBottom="0dp"
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Circle"
+                android:contentDescription="blue color button"
+                />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/yellowBtn"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+
+                android:layout_margin="5dp"
+                android:backgroundTint="@color/yellow"
+                android:insetLeft="0dp"
+                android:insetTop="0dp"
+                android:insetRight="0dp"
+                android:insetBottom="0dp"
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Circle"
+                android:contentDescription="yellow color button"
+                />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/magentaBtn"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+
+                android:layout_margin="5dp"
+                android:backgroundTint="@color/magenta"
+                android:insetLeft="0dp"
+                android:insetTop="0dp"
+                android:insetRight="0dp"
+                android:insetBottom="0dp"
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.MyApp.Button.Circle"
+                android:contentDescription="magenta color button"
+                />
+        </LinearLayout>
+    </HorizontalScrollView>
 
     <ProgressBar
         android:id="@+id/progressBar"

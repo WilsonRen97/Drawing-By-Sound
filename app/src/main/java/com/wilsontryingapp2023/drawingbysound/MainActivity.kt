@@ -108,17 +108,6 @@ class MainActivity : AppCompatActivity() {
         yellowBtn = findViewById(R.id.yellowBtn)
         magentaBtn = findViewById(R.id.magentaBtn)
 
-        val width = resources.displayMetrics.widthPixels / 7
-        val layout = LinearLayout.LayoutParams(width, width)
-        layout.setMargins(5, 5, 5, 5)
-        blackBtn!!.layoutParams = layout
-        whiteBtn!!.layoutParams = layout
-        redBtn!!.layoutParams = layout
-        greenBtn!!.layoutParams = layout
-        blueBtn!!.layoutParams = layout
-        yellowBtn!!.layoutParams = layout
-        magentaBtn!!.layoutParams = layout
-
         modeArray = arrayOf(fillBtn, penBtn, eraserBtn)
         btnArray = arrayOf(blackBtn, whiteBtn, redBtn, greenBtn, blueBtn, yellowBtn, magentaBtn)
 
@@ -307,9 +296,9 @@ class MainActivity : AppCompatActivity() {
         val myPath = File(directory, "drawing_by_sound_picture.jpg")
         try {
             if (myPath.exists()){
-                var bitmapImage = BitmapFactory.decodeStream(FileInputStream(myPath))
+                val bitmapImage = BitmapFactory.decodeStream(FileInputStream(myPath))
                 // bitmapImage is immutable by default; 所以我們要用下面這行code，將他換成mutable
-                var mutableBitmap = bitmapImage.copy(Bitmap.Config.ARGB_8888,true);
+                val mutableBitmap = bitmapImage.copy(Bitmap.Config.ARGB_8888,true);
                 paintView!!.loadBitmap(mutableBitmap)
             } else {
                 Toast.makeText(this, R.string.cannot_find_saved_image, Toast.LENGTH_LONG).show()
@@ -482,8 +471,8 @@ class MainActivity : AppCompatActivity() {
             val command = data[0].toString()
             val commandString = command.split(" ")
             val colors = ArrayList<String>()
-            var penCommand: Boolean = false
-            var fillCommand: Boolean = false
+            var penCommand = false
+            var fillCommand = false
 
             // 確認第一個辨識結果的句子中的所有內容
             for (i in commandString.indices) {
