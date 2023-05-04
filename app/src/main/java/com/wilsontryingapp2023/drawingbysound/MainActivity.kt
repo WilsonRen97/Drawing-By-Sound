@@ -11,8 +11,6 @@ import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
@@ -101,6 +99,7 @@ class MainActivity : AppCompatActivity() {
         penBtn = findViewById(R.id.penBtn)
         paintView!!.useProgressBar(progressBar!!)
         eraserBtn = findViewById(R.id.eraserBtn)
+
         blackBtn = findViewById(R.id.black_btn)
         whiteBtn = findViewById(R.id.whiteBtn)
         redBtn = findViewById(R.id.redBtn)
@@ -108,6 +107,17 @@ class MainActivity : AppCompatActivity() {
         blueBtn = findViewById(R.id.blueBtn)
         yellowBtn = findViewById(R.id.yellowBtn)
         magentaBtn = findViewById(R.id.magentaBtn)
+
+        val width = resources.displayMetrics.widthPixels / 7
+        val layout = LinearLayout.LayoutParams(width, width)
+        layout.setMargins(5, 5, 5, 5)
+        blackBtn!!.layoutParams = layout
+        whiteBtn!!.layoutParams = layout
+        redBtn!!.layoutParams = layout
+        greenBtn!!.layoutParams = layout
+        blueBtn!!.layoutParams = layout
+        yellowBtn!!.layoutParams = layout
+        magentaBtn!!.layoutParams = layout
 
         modeArray = arrayOf(fillBtn, penBtn, eraserBtn)
         btnArray = arrayOf(blackBtn, whiteBtn, redBtn, greenBtn, blueBtn, yellowBtn, magentaBtn)

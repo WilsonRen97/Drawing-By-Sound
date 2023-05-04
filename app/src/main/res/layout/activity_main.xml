@@ -95,11 +95,11 @@
         >
 
         <!-- 一定需要設定inset才會看起來是圓形-->
+        <!-- width, height先設定50dp，再用程式碼換成1/7的螢幕寬度-->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/black_btn"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_margin="5dp"
             android:backgroundTint="@color/black"
             android:insetLeft="0dp"
             android:insetTop="0dp"
@@ -113,7 +113,6 @@
             android:id="@+id/whiteBtn"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_margin="5dp"
             android:backgroundTint="@color/white"
             android:insetLeft="0dp"
             android:insetTop="0dp"
@@ -129,7 +128,6 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:backgroundTint="@color/red"
-            android:layout_margin="5dp"
             android:insetLeft="0dp"
             android:insetTop="0dp"
             android:insetRight="0dp"
@@ -143,7 +141,6 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:backgroundTint="@color/green"
-            android:layout_margin="5dp"
             android:insetLeft="0dp"
             android:insetTop="0dp"
             android:insetRight="0dp"
@@ -157,7 +154,6 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:backgroundTint="@color/blue"
-            android:layout_margin="5dp"
             android:insetLeft="0dp"
             android:insetTop="0dp"
             android:insetRight="0dp"
@@ -171,7 +167,6 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:backgroundTint="@color/yellow"
-            android:layout_margin="5dp"
             android:insetLeft="0dp"
             android:insetTop="0dp"
             android:insetRight="0dp"
@@ -191,7 +186,6 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:backgroundTint="@color/magenta"
-            android:layout_margin="5dp"
             android:insetLeft="0dp"
             android:insetTop="0dp"
             android:insetRight="0dp"
