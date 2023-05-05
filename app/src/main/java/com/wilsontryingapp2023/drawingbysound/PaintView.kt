@@ -206,9 +206,10 @@ class PaintView : View {
                 // 先被從綠色改成白色，invalidate()後，又改回綠色
                 // 造成重複放入相同的Point進入queue.size，結果就是沒完沒了的局面
                 // 從queue.size就可以看出來了
-                h.post {
-                    invalidate()
-                }
+                invalidate()
+//                h.post {
+//                    invalidate()
+//                }
                 node = queue.poll()
             } while (node != null)
         }
@@ -261,9 +262,10 @@ class PaintView : View {
                     myBitmap!!.setPixel(i, j, Color.WHITE)
                 }
                 // 每當一個直列的pixels被設定成白色後，就讓main thread做invalidate()一次
-                h.post {
-                    invalidate()
-                }
+                invalidate()
+//                h.post {
+//                    invalidate()
+//                }
             }
             lock.unlock()
             h.post {
