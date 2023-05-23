@@ -26,38 +26,34 @@ import java.util.*
 class MainActivity : AppCompatActivity() {
     companion object {
         private const val AUDIO_RECORD_REQUEST_CODE = 1
-        var EraserMode = false
         var isListening: Boolean = false
     }
 
     // 取得widgets
-    private var paintView: PaintView? = null
-    private var resultText: TextView? = null
-    private var btn: Button? = null
-    private var saveBtn: Button? = null
-    private var loadBtn : Button? = null
-    private var progressBar: ProgressBar? = null
-    private var clearBtn: MaterialButton? = null
-    private var fillBtn: MaterialButton? = null
-    private var penBtn: MaterialButton? = null
-    private var eraserBtn: MaterialButton? = null
-    private var blackBtn: MaterialButton? = null
-    private var whiteBtn: MaterialButton? = null
-    private var redBtn: MaterialButton? = null
-    private var blueBtn: MaterialButton? = null
-    private var greenBtn: MaterialButton? = null
-    private var yellowBtn: MaterialButton? = null
-    private var magentaBtn: MaterialButton? = null
+    private lateinit var paintView: PaintView
+    private lateinit var resultText: TextView
+    private lateinit var btn: Button
+    private lateinit var saveBtn: Button
+    private lateinit var loadBtn : Button
+    private lateinit var progressBar: ProgressBar
+    private lateinit var clearBtn: MaterialButton
+    private lateinit var fillBtn: MaterialButton
+    private lateinit var penBtn: MaterialButton
+    private lateinit var eraserBtn: MaterialButton
+    private lateinit var blackBtn: MaterialButton
+    private lateinit var whiteBtn: MaterialButton
+    private lateinit var redBtn: MaterialButton
+    private lateinit var blueBtn: MaterialButton
+    private lateinit var greenBtn: MaterialButton
+    private lateinit var yellowBtn: MaterialButton
+    private lateinit var magentaBtn: MaterialButton
 
-
-    private var sr: SpeechRecognizer? = null
+    private lateinit var sr: SpeechRecognizer
     private var all = ""
     private val listener: Listener = Listener()
 
-    private var previousBtnIndex = 0
-    private var previousModeIndex = 0
-    private var btnArray: Array<MaterialButton?>? = null
-    private var modeArray: Array<MaterialButton?>? = null
+    private lateinit var btnArray: Array<MaterialButton>
+    private lateinit var modeArray: Array<MaterialButton>
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -74,8 +70,8 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     // Permission has been denied, show message or handle error
                     Toast.makeText(this, R.string.permissionDeny, Toast.LENGTH_SHORT).show()
-                    resultText!!.text = resources.getString(R.string.cannotProvideRecognition)
-                    btn!!.setOnClickListener() { _ ->
+                    resultText.text = resources.getString(R.string.cannotProvideRecognition)
+                    btn.setOnClickListener {
                         Toast.makeText(this, R.string.cannotProvideRecognition2, Toast.LENGTH_SHORT).show()
                     }
                 }
@@ -86,18 +82,19 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setContentView(R.layout.activity_main)
+
         paintView = findViewById(R.id.paint_view)
         resultText = findViewById(R.id.textView3)
         btn = findViewById(R.id.myBtn)
         saveBtn = findViewById(R.id.saveBtn)
         loadBtn = findViewById(R.id.loadBtn)
         progressBar = findViewById(R.id.progressBar)
+
         clearBtn = findViewById(R.id.clearButton)
         fillBtn = findViewById(R.id.fillBtn)
         penBtn = findViewById(R.id.penBtn)
-        paintView!!.useProgressBar(progressBar!!)
+        paintView.useProgressBar(progressBar)
         eraserBtn = findViewById(R.id.eraserBtn)
 
         blackBtn = findViewById(R.id.black_btn)
@@ -112,10 +109,8 @@ class MainActivity : AppCompatActivity() {
         btnArray = arrayOf(blackBtn, whiteBtn, redBtn, greenBtn, blueBtn, yellowBtn, magentaBtn)
 
         // 設定最初的顏色是red
-        previousBtnIndex = 2
         setBtnBorder(redBtn)
         // 設定最初的mode是pen
-        previousModeIndex = 1
         setModeBorder(penBtn)
 
         //  獲得使用者的聲音錄製許可
@@ -124,131 +119,106 @@ class MainActivity : AppCompatActivity() {
             setUpSoundWork()
         }
 
-        saveBtn!!.setOnClickListener() { _ ->
-            saveToInternalStorage(paintView!!.myBitmap!!)
+        saveBtn.setOnClickListener {
+            saveToInternalStorage(paintView.myBitmap!!)
         }
 
-        loadBtn!!.setOnClickListener(){ _ ->
+        loadBtn.setOnClickListener{
             loadImageFromStorage()
         }
 
-        clearBtn!!.setOnClickListener() { _ ->
-            EraserMode = false
-            paintView!!.clear()
+        // 以下四個是長方形按鈕
+        clearBtn.setOnClickListener {
+            paintView.clear()
         }
 
-        fillBtn!!.setOnClickListener() { _ ->
-            EraserMode = false
-            paintView!!.changeMode(-1)
 
+        fillBtn.setOnClickListener {
+            paintView.changeMode(-1)
             setModeBorder(fillBtn)
-            previousModeIndex = 0
         }
 
-        penBtn!!.setOnClickListener() { _ ->
-            EraserMode = false
-            paintView!!.changeMode(1)
-
+        penBtn.setOnClickListener {
+            paintView.changeMode(1)
             setModeBorder(penBtn)
-            previousModeIndex = 1
         }
 
-        eraserBtn!!.setOnClickListener() { _ ->
-            paintView!!.changeMode(1)
-            paintView!!.changeBrushColor("white")
-            EraserMode = true
-
+        eraserBtn.setOnClickListener {
+            paintView.changeMode(0)
+            paintView.changeBrushColor("white")
             setBtnBorder(whiteBtn)
-            previousBtnIndex = 1
-
             setModeBorder(eraserBtn)
-            previousModeIndex = 2
         }
 
-        blackBtn!!.setOnClickListener() { _ ->
-            paintView!!.changeBrushColor("black")
-            EraserMode = false
-
-            // 如果目前的mode是畫筆或是橡皮擦的話，只要按下任一個圓形調色盤
-            // 就將mode強制轉回畫筆
-            if (paintView!!.getMode() == 1) {
-                setModeBorder(penBtn)
-                previousModeIndex = 1
-            }
+        blackBtn.setOnClickListener {
             setBtnBorder(blackBtn)
-            previousBtnIndex = 0
+            paintView.changeBrushColor("black")
+
+            // 如果目前的mode是橡皮擦的話，只要按下任一個圓形調色盤 就將mode強制轉回畫筆
+            if (paintView.getMode() == 0) {
+                setModeBorder(penBtn)
+                paintView.changeMode(1)
+            }
         }
 
-        whiteBtn!!.setOnClickListener() { _ ->
-            paintView!!.changeBrushColor("white")
-            EraserMode = false
-
-            if (paintView!!.getMode() == 1) {
-                setModeBorder(penBtn)
-                previousModeIndex = 1
-            }
+        whiteBtn.setOnClickListener {
             setBtnBorder(whiteBtn)
-            previousBtnIndex = 1
+            paintView.changeBrushColor("white")
+
+            if (paintView.getMode() == 0) {
+                setModeBorder(penBtn)
+                paintView.changeMode(1)
+            }
         }
 
-        redBtn!!.setOnClickListener() { _ ->
-            paintView!!.changeBrushColor("red")
-            EraserMode = false
-
-            if (paintView!!.getMode() == 1) {
-                setModeBorder(penBtn)
-                previousModeIndex = 1
-            }
+        redBtn.setOnClickListener {
             setBtnBorder(redBtn)
-            previousBtnIndex = 2
+            paintView.changeBrushColor("red")
+
+            if (paintView.getMode() == 0) {
+                setModeBorder(penBtn)
+                paintView.changeMode(1)
+            }
         }
 
-        greenBtn!!.setOnClickListener() { _ ->
-            paintView!!.changeBrushColor("green")
-            EraserMode = false
-
-            if (paintView!!.getMode() == 1) {
-                setModeBorder(penBtn)
-                previousModeIndex = 1
-            }
+        greenBtn.setOnClickListener {
             setBtnBorder(greenBtn)
-            previousBtnIndex = 3
+            paintView.changeBrushColor("green")
+
+            if (paintView.getMode() == 0) {
+                setModeBorder(penBtn)
+                paintView.changeMode(1)
+            }
         }
 
-        blueBtn!!.setOnClickListener() { _ ->
-            paintView!!.changeBrushColor("blue")
-            EraserMode = false
-
-            if (paintView!!.getMode() == 1) {
-                setModeBorder(penBtn)
-                previousModeIndex = 1
-            }
+        blueBtn.setOnClickListener {
             setBtnBorder(blueBtn)
-            previousBtnIndex = 4
+            paintView.changeBrushColor("blue")
+
+            if (paintView.getMode() == 0) {
+                setModeBorder(penBtn)
+                paintView.changeMode(1)
+            }
         }
 
-        yellowBtn!!.setOnClickListener() { _ ->
-            paintView!!.changeBrushColor("yellow")
-            EraserMode = false
-
-            if (paintView!!.getMode() == 1) {
-                setModeBorder(penBtn)
-                previousModeIndex = 1
-            }
+        yellowBtn.setOnClickListener {
             setBtnBorder(yellowBtn)
-            previousBtnIndex = 5
+            paintView.changeBrushColor("yellow")
+
+            if (paintView.getMode() == 0) {
+                setModeBorder(penBtn)
+                paintView.changeMode(1)
+            }
         }
 
-        magentaBtn!!.setOnClickListener() { _ ->
-            paintView!!.changeBrushColor("magenta")
-            EraserMode = false
-
-            if (paintView!!.getMode() == 1) {
-                setModeBorder(penBtn)
-                previousModeIndex = 1
-            }
+        magentaBtn.setOnClickListener {
             setBtnBorder(magentaBtn)
-            previousBtnIndex = 6
+            paintView.changeBrushColor("magenta")
+
+            if (paintView.getMode() == 0) {
+                setModeBorder(penBtn)
+                paintView.changeMode(1)
+            }
         }
     }
 
@@ -263,16 +233,16 @@ class MainActivity : AppCompatActivity() {
         // about the progress and results of a speech recognition task.
         // It defines a number of callback methods that are invoked during the recognition process,
         // such as onBeginningOfSpeech(), onResults(), and onError().
-        sr!!.setRecognitionListener(listener)
+        sr.setRecognitionListener(listener)
 
-        resultText!!.text = resources.getString(R.string.soundResult)
-        btn!!.setOnClickListener() { _ ->
+        resultText.text = resources.getString(R.string.soundResult)
+        btn.setOnClickListener {
             if (!isListening) {
                 isListening = true
                 // 改變button顏色與文字
-                btn!!.text = resources.getString(R.string.receiving_sound)
-                btn!!.setTextColor(Color.WHITE)
-                btn!!.setBackgroundColor(Color.BLACK)
+                btn.text = resources.getString(R.string.receiving_sound)
+                btn.setTextColor(Color.WHITE)
+                btn.setBackgroundColor(Color.BLACK)
 
                 // 開啟語音辨識功能
                 val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
@@ -284,7 +254,7 @@ class MainActivity : AppCompatActivity() {
                     RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
                 )
                 intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 5)
-                sr!!.startListening(intent)
+                sr.startListening(intent)
                 println("Start Listening....")
             }
         }
@@ -298,8 +268,8 @@ class MainActivity : AppCompatActivity() {
             if (myPath.exists()){
                 val bitmapImage = BitmapFactory.decodeStream(FileInputStream(myPath))
                 // bitmapImage is immutable by default; 所以我們要用下面這行code，將他換成mutable
-                val mutableBitmap = bitmapImage.copy(Bitmap.Config.ARGB_8888,true);
-                paintView!!.loadBitmap(mutableBitmap)
+                val mutableBitmap = bitmapImage.copy(Bitmap.Config.ARGB_8888,true)
+                paintView.loadBitmap(mutableBitmap)
             } else {
                 Toast.makeText(this, R.string.cannot_find_saved_image, Toast.LENGTH_LONG).show()
             }
@@ -337,20 +307,24 @@ class MainActivity : AppCompatActivity() {
         return directory.absolutePath
     }
 
-    fun setBtnBorder(button: MaterialButton?) {
+    fun setBtnBorder(button: MaterialButton) {
         // 先讓前的button的樣式被去除
-        btnArray!![previousBtnIndex]!!.strokeWidth = 0
+        for (myBtn in btnArray) {
+            myBtn.strokeWidth = 0
+        }
         // 設定心button的樣式
-        button!!.strokeWidth = 10
-        button!!.strokeColor = ColorStateList.valueOf(Color.GRAY)
+        button.strokeWidth = 10
+        button.strokeColor = ColorStateList.valueOf(Color.GRAY)
     }
 
-    fun setModeBorder(button: MaterialButton?) {
+    fun setModeBorder(button: MaterialButton) {
         // 先讓前的button的樣式被去除
-        modeArray!![previousModeIndex]!!.strokeWidth = 0
+        for (myBtn in modeArray) {
+            myBtn.strokeWidth = 0
+        }
         // 設定button的樣式
-        button!!.strokeWidth = 10
-        button!!.strokeColor = ColorStateList.valueOf(Color.GRAY)
+        button.strokeWidth = 10
+        button.strokeColor = ColorStateList.valueOf(Color.GRAY)
     }
 
 
@@ -396,7 +370,6 @@ class MainActivity : AppCompatActivity() {
 
 
     inner class Listener : RecognitionListener {
-
         private fun parseColor(color: String): String {
             return if (color == "blue" || color == "blu") {
                 "blue"
@@ -430,9 +403,9 @@ class MainActivity : AppCompatActivity() {
             val backgroundColor = ContextCompat.getColor(applicationContext, typedValue.resourceId)
 
             // 設定isListening是false，以及將button的顏色、文字、背景恢復到原本的設定
-            btn!!.text = resources.getString(R.string.soundBtnText)
-            btn!!.setTextColor(textColor)
-            btn!!.setBackgroundColor(backgroundColor)
+            btn.text = resources.getString(R.string.soundBtnText)
+            btn.setTextColor(textColor)
+            btn.setBackgroundColor(backgroundColor)
             isListening = false
         }
 
@@ -445,7 +418,7 @@ class MainActivity : AppCompatActivity() {
         // 如果使用者沒有在時間內講出任何話，就會進入onError
         override fun onError(error: Int) {
             restoreBtnStyling()
-            resultText!!.text = resources.getString(R.string.no_sound_text)
+            resultText.text = resources.getString(R.string.no_sound_text)
             println("error happened...")
         }
 
@@ -464,7 +437,7 @@ class MainActivity : AppCompatActivity() {
             // println(data)
             all = data!![0].toString()
 
-            resultText!!.text = resources.getString(R.string.soundResult) + all // Get This one back later
+            resultText.text = "${resources.getString(R.string.soundResult)} $all"
 
 
             // making the string command change the pen color
@@ -479,41 +452,33 @@ class MainActivity : AppCompatActivity() {
                 val currentString = commandString[i].lowercase()
                 // 如果是clear的話
                 if (currentString == "clear") {
-                    paintView!!.clear()
-                    EraserMode = false
+                    paintView.clear()
                     return // 可以讓for loop不會繼續運行
                 }
 
                 // 如果是橡皮擦的話，就不要讓程式碼繼續運行了。若使用者說「blue eraser red」，那我們必須要不管blue與red，而是設定paintView的mode=1，且顏色必須是白色。
-                if (currentString == "eraser" || currentString == "erase" || currentString == "chaser" || currentString == "tracer" || currentString == "spacer") {
-                    paintView!!.changeMode(1)
-                    paintView!!.changeBrushColor("white")
-                    EraserMode = true
-
-                    setBtnBorder(whiteBtn)
-                    previousBtnIndex = 1
-
-                    setModeBorder(eraserBtn)
-                    previousModeIndex = 2
-
-                    return // 可以讓for loop不會繼續運行
-                }
-                // 如果是填滿模式的話，不需要加入return，因為我們可以希望可以讀取「fill green」這種指令
-                else if (currentString == "fill" || currentString == "fell" || currentString == "feel" || currentString == "fail" || currentString == "phil" || currentString == "chill") {
-                    fillCommand = true
-                    EraserMode = false
-                }
-                // 如果是畫筆模式的話，不需要加入return，因為我們可以希望可以讀取「pen green」這種指令
-                else if (currentString == "pen" || currentString == "pain" || currentString == "pane" || currentString == "pan") {
-                    penCommand = true
-                    EraserMode = false
+                when (currentString) {
+                    "eraser", "erase", "chaser", "tracer", "spacer" -> {
+                        paintView.changeMode(0)
+                        paintView.changeBrushColor("white")
+                        setBtnBorder(whiteBtn)
+                        setModeBorder(eraserBtn)
+                        return // 可以讓for loop不會繼續運行
+                    }
+                    // 如果是填滿模式的話，不需要加入return，因為我們可以希望可以讀取「fill green」這種指令
+                    "fill", "fell", "feel", "fail", "phil", "chill" -> {
+                        fillCommand = true
+                    }
+                    // 如果是畫筆模式的話，不需要加入return，因為我們可以希望可以讀取「pen green」這種指令
+                    "pen", "pain", "pane", "pan" -> {
+                        penCommand = true
+                    }
+                    // 如果句子中，有顏色的話，我們就加入colors這個arraylist當中
+                    "blue", "blu", "black", "cyan", "gray", "green", "queen", "ring", "magenta", "orange", "red", "read", "lead", "white", "jello", "mellow", "yellow" -> {
+                        colors.add(currentString)
+                    }
                 }
 
-                // 如果句子中，有顏色的話，我們就加入colors這個arraylist當中
-                if (currentString == "blue" || currentString == "blu" || currentString == "black" || currentString == "cyan" || currentString == "gray" || currentString == "green" || currentString == "queen" || currentString == "ring" || currentString == "magenta" || currentString == "orange" || currentString == "red" || currentString == "read" || currentString == "lead" || currentString == "white" || currentString == "jello" || currentString == "mellow" || currentString == "yellow") {
-                    colors.add(currentString)
-                    EraserMode = false
-                }
             }
 
             // 如果指令中不包含pen或是fill的話，就不需要change mode
@@ -527,51 +492,53 @@ class MainActivity : AppCompatActivity() {
                 ).show()
                 return // 為了不讓顏色改變，所以這裡直接return即可
             } else if (penCommand) {
-                paintView!!.changeMode(1)
                 setModeBorder(penBtn)
-                previousModeIndex = 1
+                paintView.changeMode(1)
             } else if (fillCommand) {
                 setModeBorder(fillBtn)
-                previousModeIndex = 0
-                paintView!!.changeMode(-1)
+                paintView.changeMode(-1)
             }
 
             if (colors.size == 0) {
                 Toast.makeText(applicationContext, R.string.noColor, Toast.LENGTH_LONG)
                     .show()
             } else if (colors.size == 1) {
-                val colorResult = parseColor(colors[0])
-
-                if (colorResult == "black") {
-                    setBtnBorder(blackBtn)
-                    previousBtnIndex = 0
-                    paintView!!.changeBrushColor("black")
-                } else if (colorResult == "white") {
-                    setBtnBorder(whiteBtn)
-                    previousBtnIndex = 1
-                    paintView!!.changeBrushColor("white")
-                } else if (colorResult == "red") {
-                    setBtnBorder(redBtn)
-                    previousBtnIndex = 2
-                    paintView!!.changeBrushColor("red")
-                } else if (colorResult == "green") {
-                    setBtnBorder(greenBtn)
-                    previousBtnIndex = 3
-                    paintView!!.changeBrushColor("green")
-                } else if (colorResult == "blue") {
-                    setBtnBorder(blueBtn)
-                    previousBtnIndex = 4
-                    paintView!!.changeBrushColor("blue")
-                } else if (colorResult == "yellow") {
-                    setBtnBorder(yellowBtn)
-                    previousBtnIndex = 5
-                    paintView!!.changeBrushColor("yellow")
-                } else if (colorResult == "magenta") {
-                    setBtnBorder(magentaBtn)
-                    previousBtnIndex = 6
-                    paintView!!.changeBrushColor("magenta")
+                // 如果目前的mode是橡皮擦的話，只要按下任一個圓形調色盤 就將mode強制轉回畫筆
+                if (paintView.getMode() == 0) {
+                    setModeBorder(penBtn)
+                    paintView.changeMode(1)
                 }
 
+                when (parseColor(colors[0])) {
+                    "black" -> {
+                        setBtnBorder(blackBtn)
+                        paintView.changeBrushColor("black")
+                    }
+                    "white" -> {
+                        setBtnBorder(whiteBtn)
+                        paintView.changeBrushColor("white")
+                    }
+                    "red" -> {
+                        setBtnBorder(redBtn)
+                        paintView.changeBrushColor("red")
+                    }
+                    "green" -> {
+                        setBtnBorder(greenBtn)
+                        paintView.changeBrushColor("green")
+                    }
+                    "blue" -> {
+                        setBtnBorder(blueBtn)
+                        paintView.changeBrushColor("blue")
+                    }
+                    "yellow" -> {
+                        setBtnBorder(yellowBtn)
+                        paintView.changeBrushColor("yellow")
+                    }
+                    "magenta" -> {
+                        setBtnBorder(magentaBtn)
+                        paintView.changeBrushColor("magenta")
+                    }
+                }
             } else {
                 Toast.makeText(
                     applicationContext,
