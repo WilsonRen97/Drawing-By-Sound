@@ -153,15 +153,15 @@ class PaintView(c: Context, attrs: AttributeSet) : View(c, attrs) {
     }
 
     private fun floodFill(image: Bitmap, node: Point?, targetColor: Int, replacementColor: Int) {
-        var node = node
+        var myNode = node
         val width = image.width
         val height = image.height
 
         if (targetColor != replacementColor) {
             val queue: Queue<Point> = LinkedList()
             do {
-                var x = node!!.x
-                val y = node!!.y
+                var x = myNode!!.x
+                val y = myNode!!.y
 
                 // 先退回到最左邊的位置
                 while (x > 0 && image.getPixel(x - 1, y) == targetColor) {
@@ -199,8 +199,8 @@ class PaintView(c: Context, attrs: AttributeSet) : View(c, attrs) {
 //                h.post {
 //                    invalidate()
 //                }
-                node = queue.poll()
-            } while (node != null)
+                myNode = queue.poll()
+            } while (myNode != null)
         }
     }
 
